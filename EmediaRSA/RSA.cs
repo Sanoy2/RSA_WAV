@@ -34,237 +34,50 @@ namespace EmediaRSA
             klucze = new Klucze();
         }
 
-        public void Szyfruj()
+        public List<UInt16> Szyfruj(List<UInt16> uints)
         {
-
+            for (int i = 0; i < uints.Count; i++)
+            {
+                uints[i] = (UInt16)BigInteger.ModPow(uints[i], klucze.e, klucze.n);
+            }
+            return uints;
         }
 
-        public List<byte> Szyfruj(List<byte> bytes)
+        public List<UInt16> Deszyfruj(List<UInt16> uints)
         {
-            var bytes2 = new byte[bytes.Count];
-
-            for (int i = 0; i < bytes.Count; i++)
+            for (int i = 0; i < uints.Count; i++)
             {
-                bytes2[i] = bytes[i];
+                uints[i] = (UInt16)BigInteger.ModPow(uints[i], klucze.e, klucze.n);
             }
-
-            BigInteger tmp = 0;
-            var zaszyfrowane = new List<UInt32>();
-
-            for (int i = 0; i < bytes.Count / 4; i++)
-            {
-                tmp = BigInteger.ModPow(BitConverter.ToUInt32(bytes2, i), klucze.e, klucze.n);
-                zaszyfrowane.Add((UInt32)tmp);
-            }
-
-            var lista = new List<byte>();
-
-            byte[] b;
-
-            foreach (var item in zaszyfrowane)
-            {
-                b = BitConverter.GetBytes(item);
-                foreach (var elem in b)
-                {
-                    lista.Add(elem);
-                }
-            }
-
-            return lista;
+            return uints;
         }
 
-        public List<byte> Deszyfruj(List<byte> bytes)
+        public List<UInt32> Szyfruj(List<UInt32> uints)
         {
-            var bytes2 = new byte[bytes.Count];
-
-            for (int i = 0; i < bytes.Count; i++)
+            for (int i = 0; i < uints.Count; i++)
             {
-                bytes2[i] = bytes[i];
+                uints[i] = (UInt32)BigInteger.ModPow(uints[i], klucze.e, klucze.n);
             }
-
-            BigInteger tmp = 0;
-            var zaszyfrowane = new List<UInt32>();
-
-            for (int i = 0; i < bytes.Count / 4; i++)
-            {
-                tmp = BigInteger.ModPow(BitConverter.ToUInt32(bytes2, i), klucze.d, klucze.n);
-                zaszyfrowane.Add((UInt32)tmp);
-            }
-
-            var lista = new List<byte>();
-
-            byte[] b;
-
-            foreach (var item in zaszyfrowane)
-            {
-                b = BitConverter.GetBytes(item);
-                foreach (var elem in b)
-                {
-                    lista.Add(elem);
-                }
-            }
-
-            return lista;
+            return uints;
         }
 
-        public List<ushort> Szyfruj(List<ushort> liczby)
+        public List<UInt32> Deszyfruj(List<UInt32> uints)
         {
-            BigInteger tmp = 0;
-            var zaszyfrowane_ushort = new List<ushort>();
-
-            foreach (var elem in liczby)
+            for (int i = 0; i < uints.Count; i++)
             {
-                //c = t^e mod n.
-                tmp = BigInteger.ModPow(elem, klucze.e, klucze.n);
-                zaszyfrowane_ushort.Add((ushort)tmp);
+                uints[i] = (UInt32)BigInteger.ModPow(uints[i], klucze.d, klucze.n);
             }
-
-            return zaszyfrowane_ushort;
-        }
-
-        public List<ushort> Deszyfruj(List<ushort> liczby)
-        {
-            BigInteger tmp = 0;
-            var zaszyfrowane_ushort = new List<ushort>();
-
-            foreach (var elem in liczby)
-            {
-                //c = t^e mod n.
-                tmp = BigInteger.ModPow(elem, klucze.d, klucze.n);
-                zaszyfrowane_ushort.Add((ushort)tmp);
-            }
-
-            return zaszyfrowane_ushort;
-        }
-
-        public Int16[] Szyfruj(Int16[] liczby)
-        {
-            var zaszyfrowane = new BigInteger[liczby.Length];
-            for (int i = 0; i < liczby.Length; i++)
-            {
-                //c = t^e mod n.
-                zaszyfrowane[i] = BigInteger.ModPow(liczby[i], klucze.e, klucze.n);
-                liczby[i] = (Int16)zaszyfrowane[i];
-            }
-            return liczby;
-        }
-
-        public Image Szyfruj(Image bitmap)
-        {
-            Bitmap d = (Bitmap)bitmap;
-            int x, y;
-            int r, g, b, a;
-
-            for (x = 0; x < d.Width; x++)
-            {
-                for (y = 0; y < d.Height; y++)
-                {
-                    Color pixelColor = d.GetPixel(x, y);
-
-                    a = (int)BigInteger.ModPow(pixelColor.A, klucze.e, klucze.n);
-                    r = (int)BigInteger.ModPow(pixelColor.R, klucze.e, klucze.n);
-                    g = (int)BigInteger.ModPow(pixelColor.G, klucze.e, klucze.n);
-                    b = (int)BigInteger.ModPow(pixelColor.B, klucze.e, klucze.n);
-
-                    d.SetPixel(x, y, Color.FromArgb(a, r, g, b));
-                }
-            }
-
-            return (Image)d;
-        }
-
-        public Image Deszyfruj(Image bitmap)
-        {
-            Bitmap d = (Bitmap)bitmap;
-            int x, y;
-            int r, g, b, a;
-
-            for (x = 0; x < d.Width; x++)
-            {
-                for (y = 0; y < d.Height; y++)
-                {
-                    Color pixelColor = d.GetPixel(x, y);
-
-                    a = (int)BigInteger.ModPow(pixelColor.A, klucze.d, klucze.n);
-                    r = (int)BigInteger.ModPow(pixelColor.R, klucze.d, klucze.n);
-                    g = (int)BigInteger.ModPow(pixelColor.G, klucze.d, klucze.n);
-                    b = (int)BigInteger.ModPow(pixelColor.B, klucze.d, klucze.n);
-
-                    d.SetPixel(x, y, Color.FromArgb(a, r, g, b));
-                }
-            }
-
-            return (Image)d;
-        }
-
-        public void Deszyfruj()
-        {
-
-        }
-
-        public int[] Szyfruj(int[] liczby)
-        {
-            var zaszyfrowane = new BigInteger[liczby.Length];
-            for (int i = 0; i < liczby.Length; i++)
-            {
-                //c = t^e mod n.
-                zaszyfrowane[i] = BigInteger.ModPow(liczby[i], klucze.e, klucze.n);
-                liczby[i] = (int)zaszyfrowane[i];
-            }
-            return liczby;
+            return uints;
         }
 
         public int Szyfruj(int liczba)
         {
-            var zaszyfrowana = new BigInteger();
-
-            //c = t^e mod n.
-            zaszyfrowana = BigInteger.ModPow(liczba, klucze.e, klucze.n);
-            liczba = (int)zaszyfrowana;
-
-            return liczba;
-        }
-
-        public string Szyfruj(string napis)
-        {
-            byte[] bajty = Encoding.UTF8.GetBytes(napis);
-            var zaszyfrowane = new BigInteger[bajty.Length];
-            for (int i = 0; i < bajty.Length; i++)
-            {
-                //c = t^e mod n.
-                zaszyfrowane[i] = BigInteger.ModPow(bajty[i], klucze.e, klucze.n);
-                bajty[i] = (byte)zaszyfrowane[i];
-            }
-
-            string val = Encoding.UTF8.GetString(bajty);
-            return val;
-        }
-
-        public string Deszyfruj(string napis)
-        {
-            byte[] bajty = Encoding.UTF8.GetBytes(napis);
-            var rozszyfrowane = new BigInteger[bajty.Length];
-
-            for (int i = 0; i < bajty.Length; i++)
-            {
-                //t = c^d mod n
-                rozszyfrowane[i] = BigInteger.ModPow(bajty[i], klucze.d, klucze.n);
-                bajty[i] = (byte)rozszyfrowane[i];
-            }
-
-            string val = Encoding.UTF8.GetString(bajty);
-            return val;
+            return (int)BigInteger.ModPow(liczba, klucze.e, klucze.n); 
         }
 
         public int Deszyfruj(int liczba)
         {
-            var zaszyfrowana = new BigInteger();
-
-            //c = t^e mod n.
-            zaszyfrowana = BigInteger.ModPow(liczba, klucze.d, klucze.n);
-            liczba = (int)zaszyfrowana;
-
-            return liczba;
+            return (int)BigInteger.ModPow(liczba, klucze.d, klucze.n);
         }
     }
 }

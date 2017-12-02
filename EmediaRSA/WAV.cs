@@ -29,20 +29,14 @@ namespace EmediaRSA
         public List<ushort> L { get; set; }
         public List<ushort> R { get; set; }
 
-        public List<ushort> L_new { get; set; }
-        public List<ushort> R_new { get; set; }
-
-        public List<byte> bytes { get; set; }
+        public List<UInt32> UInts32 { get; set; }
 
         public WAV()
         {
             L = new List<ushort>();
             R = new List<ushort>();
 
-            L_new = new List<ushort>();
-            R_new = new List<ushort>();
-
-            bytes = new List<byte>();
+            UInts32 = new List<UInt32>();
         }
 
         public void Wczytaj(string sciezka)
@@ -64,18 +58,14 @@ namespace EmediaRSA
                 bit = br.ReadUInt16();
                 dataID = br.ReadBytes(4);
                 dataSize = br.ReadUInt32();
-                /*
+                
                 for (int i = 0; i < dataSize / blockSize; i++)
                 {
-                    L.Add((ushort)br.ReadUInt16());
-                    R.Add((ushort)br.ReadUInt16());
+                    //L.Add((ushort)br.ReadUInt16());
+                    //R.Add((ushort)br.ReadUInt16());
+                    UInts32.Add((UInt32)br.ReadUInt32());
                 }
-                */
-
-                for(int i = 0; i < dataSize; i++)
-                {
-                    bytes.Add(br.ReadByte());
-                }
+                
             }
             catch (Exception e)
             {
@@ -105,9 +95,12 @@ namespace EmediaRSA
                 bw.Write(bit);
                 bw.Write(dataID);
                 bw.Write(dataSize);
-                /*
+
                 for (int i = 0; i < dataSize / blockSize; i++)
                 {
+
+                    bw.Write(UInts32[i]);
+                    /*
                     if (i < L_new.Count)
                     {
                         bw.Write((ushort)L_new[i]);
@@ -124,12 +117,9 @@ namespace EmediaRSA
                     else
                     {
                         bw.Write(0);
-                    }
-                    */
-                for (int i = 0; i < dataSize; i++)
-                {
-                    bw.Write(bytes[i]);
+                    }*/
                 }
+
                 bw.Write(0);
                 bw.Write(0);
 
@@ -161,7 +151,6 @@ namespace EmediaRSA
             sb.AppendLine("dataID : " + dataID);
             sb.AppendLine("dataSize : " + dataSize);
             sb.AppendLine("DataSize/blockSize : " + dataSize / blockSize);
-            sb.AppendLine("bytes.Count = " + bytes.Count);
          
             return sb.ToString();
         }

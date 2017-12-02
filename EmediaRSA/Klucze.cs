@@ -71,6 +71,7 @@ namespace EmediaRSA
 
             sb.AppendLine("Klucz publiczny (e,n) : " + e + ", " + n);
             sb.AppendLine("Klucz prywatny (d,n): " + d + ", " + n);
+            sb.AppendLine("UInt32 max : " + UInt32.MaxValue.ToString());
 
             return sb.ToString();
         }
