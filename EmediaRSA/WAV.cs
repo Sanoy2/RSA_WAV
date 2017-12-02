@@ -7,35 +7,42 @@ using System.Threading.Tasks;
 
 namespace EmediaRSA
 {
-    class WAV
+    public class WAV
     {
         // HEADER 
-        private byte[] riffID { get; set; } // "riff"
-        private uint size { get; set; }
-        private byte[] wavID { get; set; } // "WAVE"
-        private byte[] fmtID { get; set; }  // "fmt "
-        private uint fmtSize { get; set; }
-        private ushort format { get; set; }
-        private ushort channels { get; set; }
-        private uint sampleRate { get; set; }
-        private uint bytePerSec { get; set; }
-        private ushort blockSize { get; set; }
-        private ushort bit { get; set; }
-        private byte[] dataID { get; set; } // "data"
-        private uint dataSize { get; set; }
+        public byte[] riffID { get; set; } // "riff"
+        public uint size { get; set; }
+        public byte[] wavID { get; set; } // "WAVE"
+        public byte[] fmtID { get; set; }  // "fmt "
+        public uint fmtSize { get; set; }
+        public ushort format { get; set; }
+        public ushort channels { get; set; }
+        public uint sampleRate { get; set; }
+        public uint bytePerSec { get; set; }
+        public ushort blockSize { get; set; }
+        public ushort bit { get; set; }
+        public byte[] dataID { get; set; } // "data"
+        public uint dataSize { get; set; }
 
         // Data
 
-        private List<short> L { get; set; }
-        private List<short> R { get; set; }
+        public List<ushort> L { get; set; }
+        public List<ushort> R { get; set; }
 
-        private List<short> L_new { get; set; }
-        private List<short> R_new { get; set; }
+        public List<ushort> L_new { get; set; }
+        public List<ushort> R_new { get; set; }
+
+        public List<byte> bytes { get; set; }
 
         public WAV()
         {
-            L = new List<short>();
-            R = new List<short>();
+            L = new List<ushort>();
+            R = new List<ushort>();
+
+            L_new = new List<ushort>();
+            R_new = new List<ushort>();
+
+            bytes = new List<byte>();
         }
 
         public void Wczytaj(string sciezka)
@@ -57,11 +64,17 @@ namespace EmediaRSA
                 bit = br.ReadUInt16();
                 dataID = br.ReadBytes(4);
                 dataSize = br.ReadUInt32();
-
+                /*
                 for (int i = 0; i < dataSize / blockSize; i++)
                 {
-                    L.Add((short)br.ReadUInt16());
-                    R.Add((short)br.ReadUInt16());
+                    L.Add((ushort)br.ReadUInt16());
+                    R.Add((ushort)br.ReadUInt16());
+                }
+                */
+
+                for(int i = 0; i < dataSize; i++)
+                {
+                    bytes.Add(br.ReadByte());
                 }
             }
             catch (Exception e)
@@ -71,9 +84,6 @@ namespace EmediaRSA
             }
 
             br.Close();
-
-            L_new = L;
-            R_new = R;
         }
 
         public void Zapisz(string sciezka)
@@ -95,7 +105,7 @@ namespace EmediaRSA
                 bw.Write(bit);
                 bw.Write(dataID);
                 bw.Write(dataSize);
-
+                /*
                 for (int i = 0; i < dataSize / blockSize; i++)
                 {
                     if (i < L_new.Count)
@@ -115,7 +125,14 @@ namespace EmediaRSA
                     {
                         bw.Write(0);
                     }
+                    */
+                for (int i = 0; i < dataSize; i++)
+                {
+                    bw.Write(bytes[i]);
                 }
+                bw.Write(0);
+                bw.Write(0);
+
             }
             catch (Exception e)
             {
@@ -143,7 +160,7 @@ namespace EmediaRSA
             sb.AppendLine("bit : " + bit);
             sb.AppendLine("dataID : " + dataID);
             sb.AppendLine("dataSize : " + dataSize);
-
+            sb.AppendLine("DataSize/blockSize : " + dataSize / blockSize);
          
             return sb.ToString();
         }

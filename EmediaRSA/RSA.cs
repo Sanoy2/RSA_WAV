@@ -16,8 +16,8 @@ namespace EmediaRSA
 
         public RSA()
         {
-            p = 263;
-            q = 241;
+            p = 239;
+            q = 271;
             init();
         }
 
@@ -39,6 +39,35 @@ namespace EmediaRSA
 
         }
 
+        public List<ushort> Szyfruj(List<ushort> liczby)
+        {
+            BigInteger tmp = 0;
+            var zaszyfrowane_ushort = new List<ushort>();
+
+            foreach (var elem in liczby)
+            {
+                //c = t^e mod n.
+                tmp = BigInteger.ModPow(elem, klucze.e, klucze.n);
+                zaszyfrowane_ushort.Add((ushort)tmp);
+            }
+
+            return zaszyfrowane_ushort;
+        }
+
+        public List<ushort> Deszyfruj(List<ushort> liczby)
+        {
+            BigInteger tmp = 0;
+            var zaszyfrowane_ushort = new List<ushort>();
+
+            foreach (var elem in liczby)
+            {
+                //c = t^e mod n.
+                tmp = BigInteger.ModPow(elem, klucze.d, klucze.n);
+                zaszyfrowane_ushort.Add((ushort)tmp);
+            }
+
+            return zaszyfrowane_ushort;
+        }
 
         public Int16[] Szyfruj(Int16[] liczby)
         {

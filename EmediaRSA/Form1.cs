@@ -41,11 +41,13 @@ namespace EmediaRSA
         private void button2_Click(object sender, EventArgs e)
         {
             // szyfrowanie
+            Szyfruj();
         }
 
         private void button3_Click(object sender, EventArgs e)
         {
             // deszyfrowanie
+            Deszyfruj();
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -68,6 +70,22 @@ namespace EmediaRSA
             {
                 return false;
             }
+        }
+
+        public void Szyfruj()
+        {
+            wav.R_new = rsa.Szyfruj(wav.R);
+            wav.L_new = rsa.Szyfruj(wav.L);
+
+            MessageBox.Show("Zaszyfrowano");
+        }
+
+        public void Deszyfruj()
+        {
+            wav.R_new = rsa.Deszyfruj(wav.R);
+            wav.L_new = rsa.Deszyfruj(wav.L);
+
+            MessageBox.Show("Deszyfrowano");
         }
 
         public bool Wczytaj_sciezke_do_odczytu()
