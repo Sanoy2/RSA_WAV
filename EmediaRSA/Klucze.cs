@@ -65,13 +65,13 @@ namespace EmediaRSA
             sb.AppendLine("p: " + p);
             sb.AppendLine("q : " + q);
             sb.AppendLine("n : " + n);
+            sb.AppendLine("UInt32 max : " + UInt32.MaxValue.ToString());
             sb.AppendLine("fi : " + fi);
             sb.AppendLine("e : " + e);
             sb.AppendLine("d : " + d);
 
             sb.AppendLine("Klucz publiczny (e,n) : " + e + ", " + n);
             sb.AppendLine("Klucz prywatny (d,n): " + d + ", " + n);
-            sb.AppendLine("UInt32 max : " + UInt32.MaxValue.ToString());
 
             return sb.ToString();
         }

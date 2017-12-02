@@ -41,6 +41,9 @@ namespace EmediaRSA
 
         public void Wczytaj(string sciezka)
         {
+            L.Clear();
+            R.Clear();
+            UInts32.Clear();
             var br = new BinaryReader(new FileStream(sciezka, FileMode.Open, FileAccess.Read));
             // br - binary reader
             try
