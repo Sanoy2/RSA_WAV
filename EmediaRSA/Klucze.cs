@@ -22,20 +22,57 @@ namespace EmediaRSA
             init(_p, _q);
         }
 
+        public Klucze()
+        {
+            p = 65537;
+            q = 65521;
+            n = 4294049777;
+            fi = 4293918720;
+            e = 11;
+            d = 2732493731;
+        }
+
         private void init(BigInteger _p, BigInteger _q)
         {
             p = _p;
             q = _q;
 
+            Console.WriteLine("Mam p ! : " + p);
+            Console.WriteLine("Mam q ! : " + q);
+
             n = p * q;
 
+            Console.WriteLine("Mam n ! : " + n);
+
             fi = (p - 1) * (q - 1);
+
+            Console.WriteLine("Mam fi ! : " + fi);
 
             var szukajE = new SzukajE(n);
             e = szukajE.LiczE(n, fi);
 
+            Console.WriteLine("Mam e ! : " + e);
+
             var szukajD = new SzukajD();
             d = szukajD.LiczD(e, fi);
+
+            Console.WriteLine("Mam d ! : " + d);
+        }
+
+        public override string ToString()
+        {
+            System.Text.StringBuilder sb = new System.Text.StringBuilder();
+            sb.AppendLine("p: " + p);
+            sb.AppendLine("q : " + q);
+            sb.AppendLine("n : " + n);
+            sb.AppendLine("fi : " + fi);
+            sb.AppendLine("e : " + e);
+            sb.AppendLine("d : " + d);
+
+            sb.AppendLine("Klucz publiczny (e,n) : " + e + ", " + n);
+            sb.AppendLine("Klucz prywatny (d,n): " + d + ", " + n);
+
+            return sb.ToString();
         }
 
         public void Wypisz_klucze()

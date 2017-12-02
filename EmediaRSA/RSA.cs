@@ -11,13 +11,13 @@ namespace EmediaRSA
 {
     public class RSA
     {
-        private Klucze klucze;
+        public  Klucze klucze { private set; get; }
         private BigInteger p, q;
 
         public RSA()
         {
-            p = 239;
-            q = 271;
+            p = 65537;
+            q = 65521;
             init();
         }
 
@@ -30,13 +30,81 @@ namespace EmediaRSA
 
         private void init()
         {
-            klucze = new Klucze(p, q);
-            klucze.Wypisz_klucze();
+            //klucze = new Klucze(p, q);
+            klucze = new Klucze();
         }
 
         public void Szyfruj()
         {
 
+        }
+
+        public List<byte> Szyfruj(List<byte> bytes)
+        {
+            var bytes2 = new byte[bytes.Count];
+
+            for (int i = 0; i < bytes.Count; i++)
+            {
+                bytes2[i] = bytes[i];
+            }
+
+            BigInteger tmp = 0;
+            var zaszyfrowane = new List<UInt32>();
+
+            for (int i = 0; i < bytes.Count / 4; i++)
+            {
+                tmp = BigInteger.ModPow(BitConverter.ToUInt32(bytes2, i), klucze.e, klucze.n);
+                zaszyfrowane.Add((UInt32)tmp);
+            }
+
+            var lista = new List<byte>();
+
+            byte[] b;
+
+            foreach (var item in zaszyfrowane)
+            {
+                b = BitConverter.GetBytes(item);
+                foreach (var elem in b)
+                {
+                    lista.Add(elem);
+                }
+            }
+
+            return lista;
+        }
+
+        public List<byte> Deszyfruj(List<byte> bytes)
+        {
+            var bytes2 = new byte[bytes.Count];
+
+            for (int i = 0; i < bytes.Count; i++)
+            {
+                bytes2[i] = bytes[i];
+            }
+
+            BigInteger tmp = 0;
+            var zaszyfrowane = new List<UInt32>();
+
+            for (int i = 0; i < bytes.Count / 4; i++)
+            {
+                tmp = BigInteger.ModPow(BitConverter.ToUInt32(bytes2, i), klucze.d, klucze.n);
+                zaszyfrowane.Add((UInt32)tmp);
+            }
+
+            var lista = new List<byte>();
+
+            byte[] b;
+
+            foreach (var item in zaszyfrowane)
+            {
+                b = BitConverter.GetBytes(item);
+                foreach (var elem in b)
+                {
+                    lista.Add(elem);
+                }
+            }
+
+            return lista;
         }
 
         public List<ushort> Szyfruj(List<ushort> liczby)

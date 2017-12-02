@@ -26,16 +26,15 @@ namespace EmediaRSA
         private void init()
         {
             rsa = new RSA();
+
+            richTextBox2.Text = rsa.klucze.ToString();
+
             wav = new WAV();
         }
 
         private void button1_Click(object sender, EventArgs e)
         {
-            if (Wczytaj_sciezke_do_odczytu())
-            {
-                wav.Wczytaj(sciezka);
-                richTextBox1.Text = wav.ToString();
-            }
+            Wczytaj();
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -52,9 +51,25 @@ namespace EmediaRSA
 
         private void button4_Click(object sender, EventArgs e)
         {
-            if(Wczytaj_sciezkie_do_zapisu())
+            Zapisz();
+        }
+
+        public void Wczytaj()
+        {
+            if (Wczytaj_sciezke_do_odczytu())
+            {
+                wav.Wczytaj(sciezka);
+                richTextBox1.Text = wav.ToString();
+                MessageBox.Show("Wczytano");
+            }
+        }
+
+        public void Zapisz()
+        {
+            if (Wczytaj_sciezkie_do_zapisu())
             {
                 wav.Zapisz(sciezka);
+                MessageBox.Show("Zapisano");
             }
         }
 
@@ -74,16 +89,14 @@ namespace EmediaRSA
 
         public void Szyfruj()
         {
-            wav.R_new = rsa.Szyfruj(wav.R);
-            wav.L_new = rsa.Szyfruj(wav.L);
+            wav.bytes = rsa.Szyfruj(wav.bytes);
 
             MessageBox.Show("Zaszyfrowano");
         }
 
         public void Deszyfruj()
         {
-            wav.R_new = rsa.Deszyfruj(wav.R);
-            wav.L_new = rsa.Deszyfruj(wav.L);
+            wav.bytes = rsa.Deszyfruj(wav.bytes);
 
             MessageBox.Show("Deszyfrowano");
         }

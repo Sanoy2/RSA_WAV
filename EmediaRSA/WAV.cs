@@ -146,11 +146,11 @@ namespace EmediaRSA
         public override string ToString()
         {
             System.Text.StringBuilder sb = new System.Text.StringBuilder();
-            
-            sb.AppendLine("riffID : " + riffID);
+
+            sb.AppendLine("riffID : " + ByteToString(riffID));
             sb.AppendLine("size : " + size);
-            sb.AppendLine("wavID : " + wavID);
-            sb.AppendLine("fmtID : " + fmtID);
+            sb.AppendLine("wavID : " + ByteToString(wavID));
+            sb.AppendLine("fmtID : " + ByteToString(fmtID));
             sb.AppendLine("fmtSize : " + fmtSize);
             sb.AppendLine("format : " + format);
             sb.AppendLine("channels : " + channels);
@@ -161,8 +161,16 @@ namespace EmediaRSA
             sb.AppendLine("dataID : " + dataID);
             sb.AppendLine("dataSize : " + dataSize);
             sb.AppendLine("DataSize/blockSize : " + dataSize / blockSize);
+            sb.AppendLine("bytes.Count = " + bytes.Count);
          
             return sb.ToString();
         }
+
+        private string ByteToString(byte[] bytes)
+        {
+            string result = System.Text.Encoding.UTF8.GetString(bytes);
+            return result;
+        }
+
     }
 }
