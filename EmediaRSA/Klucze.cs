@@ -40,6 +40,7 @@ namespace EmediaRSA
 
         public void Wypisz_klucze()
         {
+            /*
             Console.WriteLine("p : " + p);
             Console.WriteLine("q : " + q);
             Console.WriteLine("n : " + n);
@@ -49,6 +50,7 @@ namespace EmediaRSA
 
             Console.WriteLine("Klucz publiczny (e,n) : " + e + ", " + n);
             Console.WriteLine("Klucz prywatny (d,n): " + d + ", " + n);
+            */
         }
     }
 }

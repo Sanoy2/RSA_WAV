@@ -9,174 +9,142 @@ namespace EmediaRSA
 {
     class WAV
     {
-        private Int32 chunkID;
-        private Int32 fileSize;
-        private Int32 riffType;
+        // HEADER 
+        private byte[] riffID { get; set; } // "riff"
+        private uint size { get; set; }
+        private byte[] wavID { get; set; } // "WAVE"
+        private byte[] fmtID { get; set; }  // "fmt "
+        private uint fmtSize { get; set; }
+        private ushort format { get; set; }
+        private ushort channels { get; set; }
+        private uint sampleRate { get; set; }
+        private uint bytePerSec { get; set; }
+        private ushort blockSize { get; set; }
+        private ushort bit { get; set; }
+        private byte[] dataID { get; set; } // "data"
+        private uint dataSize { get; set; }
 
+        // Data
 
-        // chunk 1
-        private Int32 fmtID;
-        private Int32 fmtSize;
-        private Int16 fmtCode;
-        private Int16 channels;
-        private Int32 sampleRate;
-        private Int32 byteRate;
-        private Int16 fmtBlockAlign;
-        private Int16 bitDepth;
-        private Int32 dataID;
-        private Int32 bytes;
-        private Int16 fmtExtraSize;
-        private int bytesForSamp;
-        private int samps;
+        private List<short> L { get; set; }
+        private List<short> R { get; set; }
 
-        byte[] byteArray;
-
-        private float[] L;
-        private float[] R;
-
-        private UInt16[] asUInt16;
-        private float[] asFloat;
+        private List<short> L_new { get; set; }
+        private List<short> R_new { get; set; }
 
         public WAV()
         {
-            
+            L = new List<short>();
+            R = new List<short>();
         }
 
         public void Wczytaj(string sciezka)
         {
-            var reader = new BinaryReader(new FileStream(sciezka, FileMode.Open));
-
-            chunkID = reader.ReadInt32();
-            fileSize = reader.ReadInt32();
-            riffType = reader.ReadInt32();
-
-
-            // chunk 1
-            fmtID = reader.ReadInt32();
-            fmtSize = reader.ReadInt32(); // bytes for this chunk
-            fmtCode = reader.ReadInt16();
-            channels = reader.ReadInt16();
-            sampleRate = reader.ReadInt32();
-            byteRate = reader.ReadInt32();
-            fmtBlockAlign = reader.ReadInt16();
-            bitDepth = reader.ReadInt16();
-
-            if (fmtSize == 18)
+            var br = new BinaryReader(new FileStream(sciezka, FileMode.Open, FileAccess.Read));
+            // br - binary reader
+            try
             {
-                // Read any extra values
-                fmtExtraSize = reader.ReadInt16();
-                reader.ReadBytes(fmtExtraSize);
+                riffID = br.ReadBytes(4);
+                size = br.ReadUInt32();
+                wavID = br.ReadBytes(4);
+                fmtID = br.ReadBytes(4);
+                fmtSize = br.ReadUInt32();
+                format = br.ReadUInt16();
+                channels = br.ReadUInt16();
+                sampleRate = br.ReadUInt32();
+                bytePerSec = br.ReadUInt32();
+                blockSize = br.ReadUInt16();
+                bit = br.ReadUInt16();
+                dataID = br.ReadBytes(4);
+                dataSize = br.ReadUInt32();
+
+                for (int i = 0; i < dataSize / blockSize; i++)
+                {
+                    L.Add((short)br.ReadUInt16());
+                    R.Add((short)br.ReadUInt16());
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Błąd odczytu!");
+                Console.WriteLine(e.ToString());
             }
 
-            // chunk 2
-            dataID = reader.ReadInt32();
-            bytes = reader.ReadInt32();
+            br.Close();
 
-            //data
-            byteArray = reader.ReadBytes(bytes);
-
-            bytesForSamp = bitDepth / 8;
-            samps = bytes / bytesForSamp;
-
-            asFloat = null;
-            switch (bitDepth)
-            {
-                case 64:
-                    double[]
-                    asDouble = new double[samps];
-                    Buffer.BlockCopy(byteArray, 0, asDouble, 0, bytes);
-                    asFloat = Array.ConvertAll(asDouble, e => (float)e);
-                    break;
-                case 32:
-                    asFloat = new float[samps];
-                    Buffer.BlockCopy(byteArray, 0, asFloat, 0, bytes);
-                    break;
-                case 16:
-                    asUInt16 = new UInt16[samps];
-                    Buffer.BlockCopy(byteArray, 0, asUInt16, 0, bytes);
-                    asFloat = Array.ConvertAll(asUInt16, e => e / (float)Int16.MaxValue);
-                    break;
-                default:
-                    break;
-            }
-            /*
-            switch (channels)
-            {
-                case 1:
-                    L = asFloat;
-                    R = null;
-                    break;
-                case 2:
-                    L = new float[samps];
-                    R = new float[samps];
-                    for (int i = 0, s = 0; i < samps; i++)
-                    {
-                        L[i] = asFloat[s++];
-                        R[i] = asFloat[s++];
-                    }
-                    break;
-                default:
-                    break;
-            }
-            */
-            reader.Close();
+            L_new = L;
+            R_new = R;
         }
+
         public void Zapisz(string sciezka)
         {
-            var writer = new BinaryWriter(new FileStream(sciezka, FileMode.CreateNew, FileAccess.Write));
-            /*chunkID = reader.ReadInt32();
-            fileSize = reader.ReadInt32();
-            riffType = reader.ReadInt32();
+            var bw = new BinaryWriter(new FileStream(sciezka, FileMode.Create, FileAccess.Write));
+            // bw - binary writer
+            try
+            {
+                bw.Write(riffID);
+                bw.Write(size);
+                bw.Write(wavID);
+                bw.Write(fmtID);
+                bw.Write(fmtSize);
+                bw.Write(format);
+                bw.Write(channels);
+                bw.Write(sampleRate);
+                bw.Write(bytePerSec);
+                bw.Write(blockSize);
+                bw.Write(bit);
+                bw.Write(dataID);
+                bw.Write(dataSize);
 
+                for (int i = 0; i < dataSize / blockSize; i++)
+                {
+                    if (i < L_new.Count)
+                    {
+                        bw.Write((ushort)L_new[i]);
+                    }
+                    else
+                    {
+                        bw.Write(0);
+                    }
 
-            // chunk 1
-            fmtID = reader.ReadInt32();
-            fmtSize = reader.ReadInt32(); // bytes for this chunk
-            fmtCode = reader.ReadInt16();
-            channels = reader.ReadInt16();
-            sampleRate = reader.ReadInt32();
-            byteRate = reader.ReadInt32();
-            fmtBlockAlign = reader.ReadInt16();
-            bitDepth = reader.ReadInt16();
-            */
-            writer.Write(chunkID);
-            writer.Write(fileSize);
-            writer.Write(riffType);
-            writer.Write(fmtID);
-            writer.Write(fmtSize);
-            writer.Write(fmtCode);
-            writer.Write(channels);
-            writer.Write(sampleRate);
-            writer.Write(byteRate);
-            writer.Write(fmtBlockAlign);
-            writer.Write(bitDepth);
+                    if (i < R_new.Count)
+                    {
+                        bw.Write((ushort)R_new[i]);
+                    }
+                    else
+                    {
+                        bw.Write(0);
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Błąd zapisu!");
+                Console.WriteLine(e.ToString());
+            }
 
-            writer.Close();
+            bw.Close();
         }
 
         public override string ToString()
         {
             System.Text.StringBuilder sb = new System.Text.StringBuilder();
-            sb.AppendLine("chunkID : " + chunkID);
-            sb.AppendLine("fileSize : " + fileSize);
-            sb.AppendLine("riffType : " + riffType);
+            
+            sb.AppendLine("riffID : " + riffID);
+            sb.AppendLine("size : " + size);
+            sb.AppendLine("wavID : " + wavID);
             sb.AppendLine("fmtID : " + fmtID);
             sb.AppendLine("fmtSize : " + fmtSize);
-            sb.AppendLine("fmtCode : " + fmtCode);
+            sb.AppendLine("format : " + format);
             sb.AppendLine("channels : " + channels);
             sb.AppendLine("sampleRate : " + sampleRate);
-            sb.AppendLine("byteRate : " + byteRate);
-            sb.AppendLine("fmtBlockAlign : " + fmtBlockAlign);
-            sb.AppendLine("bitDepth : " + bitDepth);
+            sb.AppendLine("bytePerSec : " + bytePerSec);
+            sb.AppendLine("blockSize : " + blockSize);
+            sb.AppendLine("bit : " + bit);
             sb.AppendLine("dataID : " + dataID);
-            sb.AppendLine("bytes : " + bytes);
-            sb.AppendLine("fmtExtraSize : " + fmtExtraSize);
-            sb.AppendLine("bytesForSamp : " + bytesForSamp);
-            sb.AppendLine("samps : " + samps);
-            foreach (var item in asFloat)
-            {
-                sb.AppendLine(item.ToString());
-            }
+            sb.AppendLine("dataSize : " + dataSize);
+
+         
             return sb.ToString();
         }
     }

@@ -39,6 +39,7 @@ namespace EmediaRSA
 
         }
 
+
         public Int16[] Szyfruj(Int16[] liczby)
         {
             var zaszyfrowane = new BigInteger[liczby.Length];
