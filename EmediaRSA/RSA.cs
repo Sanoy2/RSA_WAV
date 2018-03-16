@@ -34,6 +34,18 @@ namespace EmediaRSA
             klucze = new Klucze();
         }
 
+        public WAV Szyfruj(WAV wav)
+        {
+            wav.UInts32 = Szyfruj(wav.UInts32);
+            return wav;
+        }
+
+        public WAV Deszyfruj(WAV wav)
+        {
+            wav.UInts32 = Deszyfruj(wav.UInts32);
+            return wav;
+        }
+
         public List<UInt16> Szyfruj(List<UInt16> uints)
         {
             for (int i = 0; i < uints.Count; i++)

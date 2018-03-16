@@ -89,14 +89,14 @@ namespace EmediaRSA
 
         public void Szyfruj()
         {
-            wav.UInts32 = rsa.Szyfruj(wav.UInts32);
+            rsa.Deszyfruj(wav);
 
             MessageBox.Show("Zaszyfrowano");
         }
 
         public void Deszyfruj()
         {
-            wav.UInts32 = rsa.Deszyfruj(wav.UInts32);
+            rsa.Szyfruj(wav);
 
             MessageBox.Show("Deszyfrowano");
         }
