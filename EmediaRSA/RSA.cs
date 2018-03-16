@@ -30,8 +30,8 @@ namespace EmediaRSA
 
         private void init()
         {
-            //klucze = new Klucze(p, q);
-            klucze = new Klucze();
+            //klucze = new Klucze(p, q);        // generowanie kluczy
+            klucze = new Klucze();              // reczne wpisanie wczesniej wygenerowanych kluczy
         }
 
         public WAV Szyfruj(WAV wav)
